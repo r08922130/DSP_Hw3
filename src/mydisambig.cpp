@@ -14,6 +14,7 @@ typedef const VocabIndex *VocabContext;
 Vocab zhu, big5;
 const LogP LogP_PseudoZero = -100;
 map< string , vector<string> > map_vec;
+map<int, string> unknown;
 //static unsigned debug = 0;
 struct Edge{
     int state_prev=0;
@@ -42,17 +43,22 @@ void viterbi(map<int, vector<VocabIndex> > path,Ngram lm, char* result_file){
             //double temp_prob = 0.0;
             Edge temp_e = edges[t-1][i];
             for(int j = 0 ; j < path[t].size();j++){
-                VocabIndex context[] = {path[t-1][i],path[t][j] , Vocab_None};
-                double cur_prob = lm.contextProb(context);
                 
+                VocabIndex context[] = {path[t][j],path[t-1][i] , Vocab_None};
+                double cur_prob = lm.contextProb(context);
                 //temp_prob = cur_prob;
                 Edge e ;
                 e.state_prev = i;
                 e.index_prev = path[t-1][i];
                 e.state_cur = j;
                 e.index_cur = path[t][j];
+                //cout << "size: "<<path[t].size() << endl;
+                if(path[t][j] == Vocab_None){
+                    e.log_prob = temp_e.log_prob -5;
+                }else{
+                    e.log_prob = temp_e.log_prob + cur_prob;
+                }
                 
-                e.log_prob = temp_e.log_prob + cur_prob;
                 edges[t].push_back(e);
                 
                 
@@ -105,10 +111,17 @@ void viterbi(map<int, vector<VocabIndex> > path,Ngram lm, char* result_file){
     ofstream output;
     output.open (result_file, ofstream::out | ofstream::app);
     for ( int i = result.size()-1 ; i >= 0 ; i--){
-        output <<  voc.getWord(result[i]) << " ";
+        if (result[i] == Vocab_None){
+            output <<  unknown[i] << " ";
+            cout <<  unknown[i]<< " ";
+        }else{
+            output <<  voc.getWord(result[i]) << " ";
+            cout <<  voc.getWord(result[i]) << " ";
+        }
+        
     }
     output  << "\n";
-    //cout <<  "Hello" << endl;
+    cout <<  "Hello" << endl;
 
 }
 map<int, vector<VocabIndex> > construct_paths(int numWords){
@@ -122,19 +135,27 @@ map<int, vector<VocabIndex> > construct_paths(int numWords){
     string token;
     string head = "";
     int i = 0;
+    //reset unknown
+    unknown.clear();
     while ((pos = line.find(" ")) != std::string::npos) {
+        
         
         token = line.substr(0, pos);
         //cout << "split " << token << endl;
         if(token.compare("") != 0) {
             //cout << "token index " << voc.getIndex(token.c_str()) << " unknown " << voc.unkIndex() << endl;
 
-            if(voc.getIndex(token.c_str()) >100000){
+            if(voc.getIndex(token.c_str()) >5740){
                 int m_size = map_vec[token.c_str()].size();
                 vector<string> ::iterator m_vec;
                 //cout  << "Start" << endl;
                 for(int j=0; j<m_size; j++){
-                    if (voc.getIndex(map_vec[token.c_str()].at(j).c_str() )>100000){
+                    if (voc.getIndex(map_vec[token.c_str()].at(j).c_str() )>5740){
+                        if (m_size == 1){
+                            unknown[i+1] =  map_vec[token.c_str()].at(j).c_str();
+                            path[i+1].push_back(Vocab_None);
+                        }
+                        
                         continue;
                     }
                     //cout <<"token : " <<voc.getIndex(map_vec[token.c_str()].at(j).c_str() )<< endl;
