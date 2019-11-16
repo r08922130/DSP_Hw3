@@ -15,6 +15,7 @@ Vocab zhu, big5;
 const LogP LogP_PseudoZero = -100;
 map< string , vector<string> > map_vec;
 map<int, string> unknown;
+int tem = 0;
 //static unsigned debug = 0;
 struct Edge{
     int state_prev=0;
@@ -110,10 +111,11 @@ void viterbi(map<int, vector<VocabIndex> > path,Ngram lm, char* result_file){
     edges.clear();
     ofstream output;
     output.open (result_file, ofstream::out | ofstream::app);
-    for ( int i = result.size()-1 ; i >= 0 ; i--){
+    int r_size = result.size();
+    for ( int i = r_size-1 ; i >= 0 ; i--){
         if (result[i] == Vocab_None){
-            output <<  unknown[i] << " ";
-            cout <<  unknown[i]<< " ";
+            output <<  unknown[r_size - i-1] << " ";
+            cout << unknown[r_size - i-1] << " " ;
         }else{
             output <<  voc.getWord(result[i]) << " ";
             cout <<  voc.getWord(result[i]) << " ";
@@ -136,7 +138,7 @@ map<int, vector<VocabIndex> > construct_paths(int numWords){
     string head = "";
     int i = 0;
     //reset unknown
-    unknown.clear();
+    
     while ((pos = line.find(" ")) != std::string::npos) {
         
         
@@ -152,14 +154,18 @@ map<int, vector<VocabIndex> > construct_paths(int numWords){
                 for(int j=0; j<m_size; j++){
                     if (voc.getIndex(map_vec[token.c_str()].at(j).c_str() )>5740){
                         if (m_size == 1){
-                            unknown[i+1] =  map_vec[token.c_str()].at(j).c_str();
+                            
+                            unknown[i+1] =  map_vec[token.c_str()].at(j);
+                            //cout << unknown[i+1] << endl;
+                            tem = i+1;
                             path[i+1].push_back(Vocab_None);
                         }
                         
-                        continue;
-                    }
+                        
+                    }else{
                     //cout <<"token : " <<voc.getIndex(map_vec[token.c_str()].at(j).c_str() )<< endl;
-                    path[i+1].push_back(voc.getIndex((map_vec[token.c_str()].at(j)).c_str()));
+                        path[i+1].push_back(voc.getIndex((map_vec[token.c_str()].at(j)).c_str()));
+                    }
                 } 
                 
                 //cout<< "size " << m_size<< endl;
@@ -254,8 +260,9 @@ int main(int argc,char **argv){
             }
             //cout << endl;
         }
+        //cout << tem << " "<<unknown[tem] << endl;
         viterbi(path,lm,argv[4]);
-        
+
         delete[] c_line;
         
     }
