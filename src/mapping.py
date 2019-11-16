@@ -22,13 +22,13 @@ if __name__ == "__main__":
         for key in zhu_to_big5.keys():
             zhu_to_big5[key] = list(set(zhu_to_big5[key]))
             f.write(key.decode('big5hkscs')+"  ")
-            print(key.decode('big5hkscs'), end = '')
+            #print(key.decode('big5hkscs'), end = '')
             for item in zhu_to_big5[key]:
                 f.write(item.decode('big5hkscs')+ " ")
-                print(item.decode('big5hkscs'), end = '')
+                #print(item.decode('big5hkscs'), end = '')
             f.write('\n')
-            print('')
+            #print('')
             
             for item in zhu_to_big5[key]:
-                f.write(item.decode('big5hkscs')+"  "+ item.decode('big5hkscs')+"\n")
-                print(item.decode('big5hkscs')+" "+ item.decode('big5hkscs'))
+                f.write(item.decode('big5hkscs')+"  "+ item.decode('big5hkscs')+" \n")
+                #print(item.decode('big5hkscs')+" "+ item.decode('big5hkscs'))
