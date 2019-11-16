@@ -262,7 +262,7 @@ int main(int argc,char **argv){
         }
         //cout << tem << " "<<unknown[tem] << endl;
         viterbi(path,lm,argv[4]);
-
+        
         delete[] c_line;
         
     }
