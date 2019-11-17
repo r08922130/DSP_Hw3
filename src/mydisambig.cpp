@@ -75,6 +75,8 @@ void viterbi(map<int, vector<VocabIndex> > path,Ngram lm, char* result_file){
     int e_len = edges.size()-1;
     //stack<VocabString> result;
     vector<VocabIndex> result;
+
+    // find max prob in last state
     for(int i = 0 ; i < edges[e_len].size(); i++){
         
         if(max_p < edges[e_len][i].log_prob){
@@ -87,8 +89,9 @@ void viterbi(map<int, vector<VocabIndex> > path,Ngram lm, char* result_file){
     }
     
     //result.push(voc.getWord(max_word));
-
+    
     result.push_back(max_word);
+    //back tracking
     for (int t = edges.size()-2 ; t >= 0;t--){
         max_p = -10000;
         max_state = -1;
