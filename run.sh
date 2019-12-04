@@ -1,6 +1,6 @@
 perl separator_big5.pl corpus.txt > corpus_seg.txt
-ngram-count ?text corpus_seg.txt ?write corpus_count.txt ?order 2
-ngram-count ?read corpus_count.txt ?lm lan_bigram.txt ?order 2 -unk
+ngram-count -text corpus_seg.txt -write corpus_count.txt -order 2
+ngram-count -read corpus_count.txt -lm lan_bigram.txt -order 2 -unk
 
 make map Big5-ZhuYin ZhuYin-Big5.map
 
